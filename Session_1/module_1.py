@@ -36,22 +36,31 @@ print(task_2(-123))
 
 
 def task_3(array: List[int]) -> int:
-    """
-    Write your code below
-    """
-    seen_numbers = set()
-    for number in array:
-        if number in seen_numbers:
-            return number
-        seen_numbers.add(number)
-    return -1
+    length = len(array)
+    result = -1
+    for i in range(length):
+        for j in range(i + 1, length):
+            if array[j] == array[i]:
+                if j - i < length:
+                    length = j - i
+                    result = array[j]
+                    inner_result = task_3(array[i:j])
+                    if inner_result != -1:
+                        return inner_result
+                if j - i == 1:
+                    return result
+                return array[j]
+    return result
+
+
+print(task_3([1, 2, 3, 3, 2]))
 
 
 def task_4(string: str) -> int:
+    """Here we use a dictionary to get arbitrary values that's given as input"""
     roman_dict = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
     result = 0
     prev_value = 0
-
     for char in string:
         value = roman_dict[char]
         if value > prev_value:
@@ -63,12 +72,15 @@ def task_4(string: str) -> int:
     return result
 
 
+print(task_4("IX"))
+
+
 def task_5(array: List[int]) -> int:
     """
     Write your code below
     """
     smallest = array[0]
-    for i in array:
-        if i < smallest:
-            smallest = i
+    for num in array:
+        if num < smallest:
+            smallest = num
     return smallest
