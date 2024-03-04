@@ -2,6 +2,8 @@
 Module for preparing inverted indexes based on uploaded documents
 """
 
+import json
+import re
 import sys
 from argparse import ArgumentParser, ArgumentTypeError, FileType
 from io import TextIOWrapper
@@ -44,11 +46,19 @@ class InvertedIndex:
     """
 
     def __init__(self, words_ids: Dict[str, List[int]]):
-        pass
+        self.words_ids = words_ids
 
     def query(self, words: List[str]) -> List[int]:
         """Return the list of relevant documents for the given query"""
-        pass
+
+        relevant_documents = set()
+        if words[0] in self.words_ids:
+            relevant_documents.update(self.words_ids[words[0]])
+        for word in words[1:]:
+            print(word)
+            if word in self.words_ids:
+                relevant_documents.intersection_update(self.words_ids[word])
+        return list(relevant_documents)
 
     def dump(self, filepath: str) -> None:
         """
@@ -56,7 +66,9 @@ class InvertedIndex:
         :param filepath: path to file with documents
         :return: None
         """
-        pass
+        # Data to be written
+        with open(filepath, "w") as outfile:
+            json.dump(self.words_ids, outfile)
 
     @classmethod
     def load(cls, filepath: str):
@@ -65,7 +77,9 @@ class InvertedIndex:
         :param filepath: path to file with documents
         :return: InvertedIndex
         """
-        pass
+        with open(filepath, "r") as infile:
+            inverted_index = json.load(infile)
+        return cls(inverted_index)
 
 
 def load_documents(filepath: str) -> Dict[int, str]:
@@ -74,7 +88,15 @@ def load_documents(filepath: str) -> Dict[int, str]:
     :param filepath: path to file with documents
     :return: Dict[int, str]
     """
-    pass
+    with open(filepath, "r", encoding="utf-8") as src_file:
+        dict_file = {}
+        for line in src_file:
+            doc_id, content = line.lower().split("\t", 1)
+            dict_file[int(doc_id)] = content
+        return dict_file
+
+
+# print(load_documents(r"C:\Users\user\Hayk_Ghazakhyan_WCAAU23\Python-Course\Final_Task\wikipedia_sample"))
 
 
 def build_inverted_index(documents: Dict[int, str]) -> InvertedIndex:
@@ -83,7 +105,27 @@ def build_inverted_index(documents: Dict[int, str]) -> InvertedIndex:
     :param documents: dict with documents
     :return: InvertedIndex class
     """
-    pass
+
+    with open(
+        r"C:\Users\user\Hayk_Ghazakhyan_WCAAU23\Python-Course\Final_Task\stop_words_en.txt",
+        "r",
+        encoding="utf-8",
+    ) as stop_words_file:
+        stop_words = [word.strip().lower() for word in stop_words_file.readlines()]
+
+    dict_inverted_index = {}
+    for doc_id, content in documents.items():
+        words = re.split(
+            r"\W+", content
+        )  # re.findall(r"\b\w+\b", content) - doesn't keep spaces
+        # used the option that Egor provided but id keeps spaces
+        words = [word for word in words if word not in stop_words]
+        for word in set(words):
+            if word not in dict_inverted_index:
+                dict_inverted_index[word] = [doc_id]
+            elif doc_id not in dict_inverted_index[word]:
+                dict_inverted_index[word].append(doc_id)
+    return InvertedIndex(dict_inverted_index)
 
 
 def callback_build(arguments) -> None:
