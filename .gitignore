@@ -10,3 +10,9 @@ __pycache__/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+inverted.index
+stop_words_en.txt
+wikipedia_sample
+task_9.avro
+task_6.json
+task_11.json
