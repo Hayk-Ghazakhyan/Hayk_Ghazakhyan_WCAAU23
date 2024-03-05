@@ -50,12 +50,13 @@ class InvertedIndex:
 
     def query(self, words: List[str]) -> List[int]:
         """Return the list of relevant documents for the given query"""
-
+        # create set to store unique values
         relevant_documents = set()
+        # add first value(s) into set
         if words[0] in self.words_ids:
             relevant_documents.update(self.words_ids[words[0]])
+        # based on first values we add the rest in the set to avoid duplicates
         for word in words[1:]:
-            print(word)
             if word in self.words_ids:
                 relevant_documents.intersection_update(self.words_ids[word])
         return list(relevant_documents)
@@ -66,7 +67,7 @@ class InvertedIndex:
         :param filepath: path to file with documents
         :return: None
         """
-        # Data to be written
+        # Inverted_index date to be written to json file
         with open(filepath, "w") as outfile:
             json.dump(self.words_ids, outfile)
 
@@ -77,6 +78,7 @@ class InvertedIndex:
         :param filepath: path to file with documents
         :return: InvertedIndex
         """
+        # load data from json file to use in the query function and store in variable inverted_index
         with open(filepath, "r") as infile:
             inverted_index = json.load(infile)
         return cls(inverted_index)
@@ -88,6 +90,7 @@ def load_documents(filepath: str) -> Dict[int, str]:
     :param filepath: path to file with documents
     :return: Dict[int, str]
     """
+    # open the file, get it in dict split and change to lowercase
     with open(filepath, "r", encoding="utf-8") as src_file:
         dict_file = {}
         for line in src_file:
@@ -96,25 +99,23 @@ def load_documents(filepath: str) -> Dict[int, str]:
         return dict_file
 
 
-# print(load_documents(r"C:\Users\user\Hayk_Ghazakhyan_WCAAU23\Python-Course\Final_Task\wikipedia_sample"))
-
-
 def build_inverted_index(documents: Dict[int, str]) -> InvertedIndex:
     """
     Builder of inverted indexes based on documents
     :param documents: dict with documents
     :return: InvertedIndex class
     """
-
+    # get stop words into list stop_words
     with open(
         r"C:\Users\user\Hayk_Ghazakhyan_WCAAU23\Python-Course\Final_Task\stop_words_en.txt",
         "r",
         encoding="utf-8",
     ) as stop_words_file:
         stop_words = [word.strip().lower() for word in stop_words_file.readlines()]
-
+    # create dict to add inverted index using .items
     dict_inverted_index = {}
     for doc_id, content in documents.items():
+        # Split content in to words an add in a list
         words = re.split(
             r"\W+", content
         )  # re.findall(r"\b\w+\b", content) - doesn't keep spaces
@@ -125,6 +126,7 @@ def build_inverted_index(documents: Dict[int, str]) -> InvertedIndex:
                 dict_inverted_index[word] = [doc_id]
             elif doc_id not in dict_inverted_index[word]:
                 dict_inverted_index[word].append(doc_id)
+            # returned dict inverted index as InvertedIndex classes object
     return InvertedIndex(dict_inverted_index)
 
 
