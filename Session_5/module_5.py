@@ -6,9 +6,9 @@ from random import choice, seed
 from typing import List, Union
 
 import requests
-from requests.exceptions import RequestException
+from requests.exceptions import ConnectionError, RequestException
 
-# from requests.exceptions import ConnectionError
+# from requests.exceptions import ConnectionError, HTTPError,
 # from gensim.utils import simple_preprocess
 
 
@@ -59,13 +59,21 @@ def task_2(top_k: int):
         return result
 
 
+# def task_3(url: str):
+#     try:
+#         response = requests.get(url)
+#         response.raise_for_status()  # Raises an HTTPError for bad responses
+#         return response
+#     except
+
+
 def task_3(url: str):
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses
         return response
-    except RequestException as e:
-        raise RequestException(f"Error in making the request: {str(e)}")
+    except RequestException:
+        return ConnectionError("Connection interrupted")
 
 
 def task_4(data: List[Union[int, str, float]]):
@@ -73,26 +81,20 @@ def task_4(data: List[Union[int, str, float]]):
     for num in data:
         try:  # checking if we can change the type of num
             total_sum += float(num)
-        except TypeError:  # except if can't change to float
-            print("TypeError: Cannot convert non-numeric value to float")
-            return None
+        except (TypeError, ValueError):  # except if can't change to float
+            print("Skipping non-numeric value: {num}")
+
     return total_sum
-
-
-print(task_4([1, 2, 3]))
 
 
 def task_5():
     try:
         # Getting input and split into two variables
-        num1, num2 = map(float, input().split())
-        # checking 0 division
-        if num2 == 0:
-            print("Can't divide by zero")
-        else:
-            # getting result
-            result = num1 / num2
-            print(f"The result of division is: {result}")
+        num1, num2 = map(float, input("enter a number").split())
 
+        result = num1 / num2
+        print(result)
     except ValueError:
         print("Entered value is wrong")
+    except ZeroDivisionError:
+        print("Can't divide by zero")
