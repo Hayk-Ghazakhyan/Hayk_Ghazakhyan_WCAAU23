@@ -80,7 +80,7 @@ class Trainee:
 
 
 obj = Trainee("Hayk", "Ghazakhyan")
-obj.visit_lecture()  # 1 -
+obj.visit_lecture()
 print(obj.is_passed())
 obj._add_points(6)
 print(obj.is_passed())
