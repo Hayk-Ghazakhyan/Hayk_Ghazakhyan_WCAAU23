@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS BL_3NF.CE_Rentals(
 	rental_SRC_ID varchar(256)  NOT NULL DEFAULT 'n.a.',
 	location_id bigint NOT NULL REFERENCES BL_DM.DIM_Locations(location_SURR_id) DEFAULT -1, 
 	payment_id bigint NOT NULL REFERENCES BL_DM.DIM_Payments(payment_SURR_id) DEFAULT -1,	
-	cycle_id bigint NOT NULL REFERENCES BL_DM.DIM_cycle_SCD(cycle_SURR_id) DEFAULT -1,
+	cycle_id bigint NOT NULL,
 	customer_id bigint NOT NULL REFERENCES BL_DM.DIM_customers(customer_SURR_id) DEFAULT -1,
 	rental_dt date NOT NULL REFERENCES BL_DM.DIM_Dates(date_SURR_id) DEFAULT '1900-01-01',
 	rental_tm time NOT NULL REFERENCES BL_DM.DIM_Times(time_SURR_id) DEFAULT '00:00:00',
